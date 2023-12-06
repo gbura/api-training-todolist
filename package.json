@@ -1,0 +1,21 @@
+{
+	"name": "todo-project",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "json-server ./database/db.json",
+		"build": "tailwindcss -i ./src/input.css -o ./dist/css/style.css --minify",
+		"watch": "tailwindcss -i ./src/input.css -o ./dist/css/style.css --watch"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"json-server": "^0.17.4"
+	},
+	"devDependencies": {
+		"tailwindcss": "^3.3.5"
+	}
+}
