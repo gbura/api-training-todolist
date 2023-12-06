@@ -61,7 +61,22 @@ function handleTaskListClick(event) {
 }
 
 function completeTask(id) {
-	console.log('Wykonano zadanie o ID:', id)
+	fetch(`http://localhost:3000/tasks/${id}`, {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ completed: true }),
+	})
+		.then(response => response.json())
+		.then(data => {
+			console.log('Wykonano zadanie o ID:', id)
+			fetch(API_URL)
+				.then(response => response.json())
+				.then(data => renderTasks(data))
+				.catch(error => console.error('Błąd przy pobieraniu zadań:', error))
+		})
+		.catch(error => console.error('Błąd przy aktualizacji zadania:', error))
 }
 
 function editTask(id) {
@@ -70,6 +85,16 @@ function editTask(id) {
 }
 
 function deleteTask(id) {
-	console.log('Usunięcie zadania o ID:', id)
-	// Tutaj logika do usuwania zadania
+	fetch(`http://localhost:3000/tasks/${id}`, {
+		method: 'DELETE',
+	})
+		.then(response => response.json())
+		.then(data => {
+			console.log('Usunięto zadanie o ID:', id)
+			fetch(API_URL)
+				.then(response => response.json())
+				.then(data => renderTasks(data))
+				.catch(error => console.error('Błąd przy pobieraniu zadań:', error))
+		})
+		.catch(error => console.error('Błąd przy aktualizacji zadania:', error))
 }
