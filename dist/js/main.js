@@ -1,9 +1,11 @@
-document.addEventListener('DOMContentLoaded', () => {
-	fetch('http://localhost:3000/tasks')
-		.then(response => response.json())
-		.then(data => renderTasks(data))
-		.catch(error => console.error('Błąd przy pobieraniu zadań:', error))
-})
+const uploadApi = () => {
+	document.addEventListener('DOMContentLoaded', () => {
+		fetch('http://localhost:3000/tasks')
+			.then(response => response.json())
+			.then(data => renderTasks(data))
+			.catch(error => console.error('Błąd przy pobieraniu zadań:', error))
+	})
+}
 
 function renderTasks(tasks) {
 	const taskList = document.getElementById('task-list')
@@ -71,17 +73,41 @@ function completeTask(id) {
 		.then(response => response.json())
 		.then(data => {
 			console.log('Wykonano zadanie o ID:', id)
-			fetch('http://localhost:3000/tasks')
-				.then(response => response.json())
-				.then(data => renderTasks(data))
-				.catch(error => console.error('Błąd przy pobieraniu zadań:', error))
+			uploadApi()
 		})
 		.catch(error => console.error('Błąd przy aktualizacji zadania:', error))
 }
 
 function editTask(id) {
-	console.log('Edycja zadania o ID:', id)
-	// Tutaj logika do edycji zadania
+	const taskItem = document.querySelector(`li[data-id="${id}"]`)
+	const text = taskItem.querySelector('span')
+	const input = document.createElement('input')
+	input.type = 'text'
+	input.value = text.textContent
+	text.textContent = ''
+	text.appendChild(input)
+
+	input.addEventListener('keyup', function (e) {
+		if (e.key === 'Enter') {
+			const newTitle = input.value
+			saveEditedTask(id, newTitle)
+		}
+	})
+}
+
+function saveEditedTask(id, newTitle) {
+	fetch(`http://localhost:3000/tasks/${id}`, {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ title: newTitle }),
+	})
+		.then(response => response.json())
+		.then(data => {
+			console.log('Edytowano zadanie o ID:', id)
+			uploadApi()
+		})
 }
 
 function deleteTask(id) {
@@ -91,10 +117,9 @@ function deleteTask(id) {
 		.then(response => response.json())
 		.then(data => {
 			console.log('Usunięto zadanie o ID:', id)
-			fetch('http://localhost:3000/tasks')
-				.then(response => response.json())
-				.then(data => renderTasks(data))
-				.catch(error => console.error('Błąd przy pobieraniu zadań:', error))
+			uploadApi()
 		})
 		.catch(error => console.error('Błąd przy aktualizacji zadania:', error))
 }
+
+uploadApi()
