@@ -62,7 +62,7 @@ function handleTaskListClick(event) {
 
 function completeTask(id) {
 	fetch(`http://localhost:3000/tasks/${id}`, {
-		method: 'PUT',
+		method: 'PATCH',
 		headers: {
 			'Content-Type': 'application/json',
 		},
@@ -71,7 +71,7 @@ function completeTask(id) {
 		.then(response => response.json())
 		.then(data => {
 			console.log('Wykonano zadanie o ID:', id)
-			fetch(API_URL)
+			fetch('http://localhost:3000/tasks')
 				.then(response => response.json())
 				.then(data => renderTasks(data))
 				.catch(error => console.error('Błąd przy pobieraniu zadań:', error))
@@ -91,7 +91,7 @@ function deleteTask(id) {
 		.then(response => response.json())
 		.then(data => {
 			console.log('Usunięto zadanie o ID:', id)
-			fetch(API_URL)
+			fetch('http://localhost:3000/tasks')
 				.then(response => response.json())
 				.then(data => renderTasks(data))
 				.catch(error => console.error('Błąd przy pobieraniu zadań:', error))
