@@ -1,11 +1,6 @@
 {
   "tasks": [
     {
-      "id": 1,
-      "title": "umyc sie",
-      "completed": false
-    },
-    {
       "id": 2,
       "title": "Umyć samochód",
       "completed": true
@@ -39,6 +34,11 @@
       "id": 8,
       "title": "Zaplanować wakacje",
       "completed": true
+    },
+    {
+      "title": "Umyć głowę",
+      "completed": false,
+      "id": 9
     }
   ]
 }

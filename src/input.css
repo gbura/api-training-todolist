@@ -17,3 +17,7 @@
 .btn-delete {
 	@apply bg-red-500 hover:bg-red-700;
 }
+
+.btn-add {
+	@apply bg-green-500 hover:bg-green-700;
+}

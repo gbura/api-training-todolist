@@ -10,6 +10,21 @@ const uploadApi = () => {
 function renderTasks(tasks) {
 	const taskList = document.getElementById('task-list')
 	taskList.innerHTML = ''
+
+	const addTaskButton = document.createElement('button')
+	addTaskButton.textContent = 'Dodaj'
+	addTaskButton.className = 'btn btn-add'
+	addTaskButton.addEventListener('click', addTask)
+
+	const newTaskInput = document.createElement('input')
+	newTaskInput.type = 'text'
+	newTaskInput.placeholder = 'Dodaj nowe zadanie'
+	newTaskInput.className = 'px-1 py-2'
+	newTaskInput.id = 'newTaskInput'
+
+	taskList.append(newTaskInput)
+	taskList.append(addTaskButton)
+
 	tasks.forEach(task => {
 		const taskItem = document.createElement('li')
 		taskItem.className = 'p-2 flex justify-between items-center mb-2'
@@ -60,6 +75,31 @@ function handleTaskListClick(event) {
 	} else if (event.target.matches('[data-action=delete')) {
 		deleteTask(taskId)
 	}
+}
+
+function addTask() {
+	const newTaskInput = document.getElementById('newTaskInput')
+	const newTitle = newTaskInput.value
+
+	if (newTitle.trim() === '') {
+		alert('Wprowadź treść zadania!')
+		return
+	}
+
+	fetch('http://localhost:3000/tasks', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ title: newTitle, completed: false }),
+	})
+		.then(response => response.json())
+		.then(data => {
+			console.log('Dodano nowe zadanie', data)
+			uploadApi()
+		})
+		.catch(error => console.error('Błąd przy dodawaniu zadania', error))
+	newTaskInput.value = ''
 }
 
 function completeTask(id) {
