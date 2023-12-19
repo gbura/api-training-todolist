@@ -1,19 +1,14 @@
 {
   "tasks": [
     {
-      "id": 2,
-      "title": "Umyć samochód",
-      "completed": true
-    },
-    {
       "id": 3,
-      "title": "Uczyć się do egzaminu",
-      "completed": false
+      "title": "proba)",
+      "completed": true
     },
     {
       "id": 4,
       "title": "Pójść na siłownię",
-      "completed": false
+      "completed": true
     },
     {
       "id": 5,

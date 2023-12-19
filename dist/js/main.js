@@ -1,11 +1,80 @@
-const uploadApi = () => {
-	document.addEventListener('DOMContentLoaded', () => {
-		fetch('http://localhost:3000/tasks')
-			.then(response => response.json())
-			.then(data => renderTasks(data))
-			.catch(error => console.error('Błąd przy pobieraniu zadań:', error))
-	})
+const uploadApi = async () => {
+	renderTasks(await handleApi.getAll())
 }
+
+class HandleApi {
+	constructor(URL) {
+		this.URL = URL
+	}
+
+	async getAll() {
+		try {
+			const response = await fetch(this.URL)
+			const data = await response.json()
+			return data
+		} catch (error) {
+			console.error('Blad przy pobieraniu zadan')
+		}
+	}
+
+	async addTask(task) {
+		try {
+			const response = await fetch(this.URL, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(task),
+			})
+			return await response.json()
+		} catch (error) {
+			console.error('Blad przy dodawaniu zadania')
+		}
+	}
+
+	async deleteTask(id) {
+		try {
+			const response = await fetch(`${this.URL}/${id}`, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			})
+		} catch (error) {
+			console.error('Blad przy usuwaniu zadania')
+		}
+	}
+
+	async completeTask(id) {
+		try {
+			const response = await fetch(`${this.URL}/${id}`, {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ completed: true }),
+			})
+		} catch (error) {
+			console.error('Blad przy wykonaniu zadania')
+		}
+	}
+
+	async editTask(id, newTitle) {
+		try {
+			const response = await fetch(`${this.URL}/${id}`, {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ title: newTitle }),
+			})
+		} catch (error) {
+			console.error('Blad przy edycji zadania')
+		}
+	}
+}
+
+const handleApi = new HandleApi('http://localhost:3000/tasks')
 
 function renderTasks(tasks) {
 	const taskList = document.getElementById('task-list')
@@ -14,7 +83,10 @@ function renderTasks(tasks) {
 	const addTaskButton = document.createElement('button')
 	addTaskButton.textContent = 'Dodaj'
 	addTaskButton.className = 'btn btn-add'
-	addTaskButton.addEventListener('click', addTask)
+	addTaskButton.addEventListener('click', e => {
+		e.preventDefault()
+		addTask()
+	})
 
 	const newTaskInput = document.createElement('input')
 	newTaskInput.type = 'text'
@@ -85,37 +157,13 @@ function addTask() {
 		alert('Wprowadź treść zadania!')
 		return
 	}
-
-	fetch('http://localhost:3000/tasks', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ title: newTitle, completed: false }),
-	})
-		.then(response => response.json())
-		.then(data => {
-			console.log('Dodano nowe zadanie', data)
-			uploadApi()
-		})
-		.catch(error => console.error('Błąd przy dodawaniu zadania', error))
+	const data = handleApi.addTask({ title: newTitle, completed: false })
+	uploadApi()
 	newTaskInput.value = ''
 }
 
-function completeTask(id) {
-	fetch(`http://localhost:3000/tasks/${id}`, {
-		method: 'PATCH',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ completed: true }),
-	})
-		.then(response => response.json())
-		.then(data => {
-			console.log('Wykonano zadanie o ID:', id)
-			uploadApi()
-		})
-		.catch(error => console.error('Błąd przy aktualizacji zadania:', error))
+async function completeTask(id) {
+	await handleApi.completeTask(id)
 }
 
 function editTask(id) {
@@ -127,39 +175,16 @@ function editTask(id) {
 	text.textContent = ''
 	text.appendChild(input)
 
-	input.addEventListener('keyup', function (e) {
+	input.addEventListener('keyup', async function (e) {
 		if (e.key === 'Enter') {
 			const newTitle = input.value
-			saveEditedTask(id, newTitle)
+			await handleApi.editTask(id, newTitle)
 		}
 	})
 }
 
-function saveEditedTask(id, newTitle) {
-	fetch(`http://localhost:3000/tasks/${id}`, {
-		method: 'PATCH',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ title: newTitle }),
-	})
-		.then(response => response.json())
-		.then(data => {
-			console.log('Edytowano zadanie o ID:', id)
-			uploadApi()
-		})
-}
-
-function deleteTask(id) {
-	fetch(`http://localhost:3000/tasks/${id}`, {
-		method: 'DELETE',
-	})
-		.then(response => response.json())
-		.then(data => {
-			console.log('Usunięto zadanie o ID:', id)
-			uploadApi()
-		})
-		.catch(error => console.error('Błąd przy aktualizacji zadania:', error))
+async function deleteTask(id) {
+	await handleApi.deleteTask(id)
 }
 
 uploadApi()
